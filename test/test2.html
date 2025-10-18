@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Админ-панель</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"/>
+  <style>
+    html[data-bs-theme] {
+      transition: background-color .3s, color .3s;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="m-0">Админ-панель</h1>
+      <!-- Переключатель темы -->
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="themeSwitch"/>
+        <label class="form-check-label" for="themeSwitch">
+          Тёмная тема
+        </label>
+      </div>
+    </div>
+
+    <!-- Навигационные табы -->
+    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link active"
+          id="posts-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#posts"
+          type="button" role="tab"
+          aria-controls="posts"
+          aria-selected="true"
+        >Посты</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          id="projects-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#projects"
+          type="button" role="tab"
+          aria-controls="projects"
+          aria-selected="false"
+        >Проекты</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          id="admins-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#admins"
+          type="button" role="tab"
+          aria-controls="admins"
+          aria-selected="false"
+        >Администраторы</button>
+      </li>
+    </ul>
+
+    <!-- Контент табов -->
+    <div class="tab-content mt-3" id="adminTabsContent">
+      <div
+        class="tab-pane fade show active"
+        id="posts"
+        role="tabpanel"
+        aria-labelledby="posts-tab"
+      >
+        <h2>Управление постами</h2>
+        <p>Здесь ваш CRUD-интерфейс для постов.</p>
+      </div>
+      <div
+        class="tab-pane fade"
+        id="projects"
+        role="tabpanel"
+        aria-labelledby="projects-tab"
+      >
+        <h2>Управление проектами</h2>
+        <p>Здесь ваша админка для проектов.</p>
+      </div>
+      <div
+        class="tab-pane fade"
+        id="admins"
+        role="tabpanel"
+        aria-labelledby="admins-tab"
+      >
+        <h2>Управление администраторами</h2>
+        <p>Добавление/удаление/редактирование админов.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+  <script>
+    (function() {
+      const switchEl = document.getElementById('themeSwitch');
+      const root = document.documentElement;
+      // сразу подхватываем сохранённую тему
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        root.setAttribute('data-bs-theme', savedTheme);
+        switchEl.checked = savedTheme === 'dark';
+      }
+
+      switchEl.addEventListener('change', () => {
+        const theme = switchEl.checked ? 'dark' : 'light';
+        root.setAttribute('data-bs-theme', theme);
+        localStorage.setItem('theme', theme);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+{{ define "admin" }}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Админ-панель</title>
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+  <style>
+    html[data-bs-theme] {
+      transition: background-color .3s, color .3s;
+    }
+    .table td { vertical-align: middle; }   
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div class="container py-4 flex-fill">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="m-0">Админ-панель</h1>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="themeSwitch"/>
+      <label class="form-check-label" for="themeSwitch">Тёмная тема</label>
+    </div>
+  </div>
+
+  <!-- Вкладки -->
+  <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link {{ if eq .ActiveTab "posts" }}active{{ end }}"
+      data-bs-toggle="tab"
+      href="#posts">Посты</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ if eq .ActiveTab "projects" }}active{{ end }}"
+      data-bs-toggle="tab"
+      href="#projects">Проекты</a>
+    </li>
+  </ul>
+
+  <!-- Контент -->
+  <div class="tab-content mt-3">
+    <!-- Таб: Посты -->
+    <div class="tab-pane fade {{ if eq .ActiveTab "posts" }}show active{{ end }}"
+    id="posts">
+    <h2>Управление постами</h2>
+
+    <form method="POST"
+          action="{{ if .Edit }}/admin/update_post{{ else }}/admin/save_post{{ end }}"
+          class="mb-4">
+      {{ if .Edit }}
+      <input type="hidden" name="id" value="{{ .Edit.ID }}">
+      {{ end }}
+      <div class="mb-3">
+        <label for="label_post" class="form-label">
+          {{ if .Edit }}Редактировать название{{ else }}Название статьи{{ end }}
+        </label>
+        <input type="text"
+               class="form-control"
+               name="label_post"
+               id="label_post"
+               value="{{ if .Edit }}{{ .Edit.Label }}{{ end }}"
+               required>
+      </div>
+      <div class="mb-3">
+        <label for="text_post" class="form-label">
+          {{ if .Edit }}Редактировать текст{{ else }}Текст статьи{{ end }}
+        </label>
+        <textarea class="form-control" id="text_post"
+                  name="text_post"
+                  style="height:120px" required>{{ if .Edit }}{{ .Edit.Text }}{{ end }}</textarea>
+      </div>
+      <button type="submit"
+              class="btn {{ if .Edit }}btn-primary{{ else }}btn-success{{ end }}">
+        {{ if .Edit }}Сохранить{{ else }}Создать пост{{ end }}
+      </button>
+      {{ if .Edit }}
+      <a href="/admin" class="btn btn-secondary ms-2">Отмена</a>
+      {{ end }}
+    </form>
+
+    <table class="table table-striped align-middle">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Текст</th>
+        <th>Действия</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{ if .Posts }}
+      {{ range .Posts }}
+      <tr>
+        <td>{{ .ID }}</td>
+        <td>{{ .Label }}</td>
+        <td class="text-truncate" style="max-width:250px">{{ .Text }}</td>
+        <td>
+          <a href="/admin/edit_post?id={{ .ID }}" class="btn btn-sm btn-primary">Ред.</a>
+          <form method="POST"
+                action="/admin/delete_post"
+                style="display:inline"
+                onsubmit="return confirm('Удалить пост #{{ .ID }}?')">
+            <input type="hidden" name="id" value="{{ .ID }}">
+            <button type="submit" class="btn btn-sm btn-danger">Удал.</button>
+          </form>
+        </td>
+      </tr>
+      {{ end }}
+      {{ else }}
+      <tr>
+        <td colspan="4" class="text-center py-3">Постов пока нет</td>
+      </tr>
+      {{ end }}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Таб: Проекты -->
+  <div class="tab-pane fade {{ if eq .ActiveTab "projects" }}show active{{ end }}"
+  id="projects">
+  <h2>Управление проектами</h2>
+
+  <form method="POST" action="/admin/projects/refresh" class="mb-3">
+    <div class="input-group">
+      <span class="input-group-text">GitHub user|URL</span>
+      <input
+              type="text"
+              name="github_user"
+              class="form-control"
+              placeholder="например, anlix-y или https://github.com/owner/repo"
+              value="">
+    </div>
+    <button class="btn btn-outline-primary mt-2">Обновить из GitHub</button>
+  </form>
+
+
+  <form method="POST" action="/admin/projects/save" enctype="multipart/form-data">
+    <table class="table">
+      <thead>…</thead>
+      <tbody>
+      {{ range .Projects }}
+      <tr>
+        <td>
+          <input type="checkbox"
+                 name="enabled_{{ .ID }}"
+                 {{ if .Enabled }}checked{{ end }}>
+        </td>
+        <td>{{ .RepoName }}</td>
+        <td>{{ .Title }}</td>
+        <td>
+          <!-- старый input URL -->
+          <input type="url"
+                 name="custom_{{ .ID }}"
+                 class="form-control"
+                 placeholder="https://…"
+                 value="{{ .CustomURL }}">
+        </td>
+        <td>
+          <!-- новый input file -->
+          <input type="file"
+                 name="image_{{ .ID }}"
+                 accept="image/*"
+                 class="form-control">
+        </td>
+      </tr>
+      {{ end }}
+      </tbody>
+    </table>
+    <button class="btn btn-success">Сохранить</button>
+  </form>
+</div>
+</div>
+</div>
+
+<footer class="bg-dark text-light text-center py-3 mt-auto">
+  © 2025 Ваш сайт
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function(){
+    const sw = document.getElementById('themeSwitch'),
+            rt = document.documentElement,
+            t = localStorage.getItem('theme') || 'light';
+    rt.setAttribute('data-bs-theme', t);
+    sw.checked = t === 'dark';
+    sw.addEventListener('change', () => {
+      const m = sw.checked ? 'dark' : 'light';
+      rt.setAttribute('data-bs-theme', m);
+      localStorage.setItem('theme', m);
+    });
+  })();
+</script>
+</body>
+</html>
+{{ end }}

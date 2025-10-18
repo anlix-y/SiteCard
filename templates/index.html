@@ -1,0 +1,62 @@
+﻿{{ define "index" }}
+
+{{ template "header" }}
+
+<!-- Hero -->
+<main class="flex-fill pt-5">
+  <section id="hero">
+    <h1 class="display-4 mb-4">Добро пожаловать на наш сайт!</h1>
+    <div class="social-icons">
+      <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    </div>
+  </section>
+
+  <section class="container py-5">
+    <div class="row g-4">
+      {{ if .Posts }}
+      {{ range .Posts }}
+      <div class="col-12 col-md-6">
+        <div class="border-bottom pb-3">
+          <h2>{{ .Label }}</h2>
+
+          <div class="post-preview" id="preview-{{.ID}}">
+            {{ markdown (truncate .Text 62) }}
+          </div>
+
+          {{ if gt (len .Text) 62 }}
+          <a href="#" class="read-more btn btn-link p-0" data-id="{{.ID}}">
+            Читать далее
+          </a>
+          {{ end }}
+        </div>
+      </div>
+
+      <div class="modal fade" id="modal-{{.ID}}" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{.Label}}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-break">
+              {{ markdown .Text }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{ end }}
+      {{ else }}
+      <div class="col-12 text-center">
+        <p>Постов пока нет.</p>
+      </div>
+      {{ end }}
+    </div>
+  </section>
+</main>
+
+{{ template "footer" }}
+
+{{ end }}
