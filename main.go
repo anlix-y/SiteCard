@@ -7,9 +7,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load()
 	// Инициализация и отложенное закрытие пула соединений с БД
 	db.InitPool()
 	defer db.ClosePool()

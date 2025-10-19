@@ -1,0 +1,34 @@
+﻿{{ define "projects_table" }}
+<tbody>
+{{ range . }}
+<tr>
+    <td>
+        <input type="checkbox" name="enabled_{{ .ID }}" {{ if .Enabled }}checked{{ end }}>
+    </td>
+    <td>{{ .RepoName }}</td>
+    <td>{{ .Title }}</td>
+    <td>
+        <input type="url" name="custom_{{ .ID }}" class="form-control"
+               placeholder="https://…" value="{{ .CustomURL }}">
+    </td>
+    <td>
+        {{ if .ImageURL }}
+        <img src="{{ .ImageURL }}" alt="preview" style="max-height:50px; display:block; margin-bottom:4px;">
+        {{ else }}
+        <span class="text-muted">Нет картинки</span>
+        {{ end }}
+        <input type="file" name="image_{{ .ID }}" accept="image/*" class="form-control mt-1">
+    </td>
+</tr>
+{{ end }}
+</tbody>
+{{ if . }}
+<tfoot>
+<tr>
+    <td colspan="5" class="text-end">
+        <button id="saveBtn" class="btn btn-success" >Сохранить</button>
+    </td>
+</tr>
+</tfoot>
+{{ end }}
+{{ end }}

@@ -24,9 +24,12 @@ func AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	data := AdminViewData{ActiveTab: tab}
 
 	if tab == "projects" {
-		rows, err := db.Pool.Query(context.Background(),
-			`SELECT id,repo_name,title,description,image_url,github_url,custom_url,enabled
-               FROM projects ORDER BY updated_at DESC`)
+		rows, err := db.Pool.Query(context.Background(), `
+    SELECT id, repo_name, title, description, image_url,
+           github_url, custom_url, enabled
+      FROM projects
+  ORDER BY updated_at DESC`)
+
 		if err != nil {
 			http.Error(w, "DB error", http.StatusInternalServerError)
 			return
@@ -39,7 +42,6 @@ func AdminDashboard(w http.ResponseWriter, r *http.Request) {
 				&p.ImageURL, &p.GitHubURL, &p.CustomURL, &p.Enabled)
 			data.Projects = append(data.Projects, p)
 		}
-
 	} else {
 		// таб «Посты»
 		data.ActiveTab = "posts"
