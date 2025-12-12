@@ -33,17 +33,17 @@
     <h2 class="text-center mb-4">Вход</h2>
     <form action="/login" method="post" novalidate>
         <div class="mb-3">
-            <label for="login" class="form-label">Логин</label>
+            <label for="email" class="form-label">Email</label>
             <input
-                    type="login"
+                    type="email"
                     class="form-control"
-                    id="login"
-                    name="login"
+                    id="email"
+                    name="email"
                     required
-                    placeholder="Admin"
+                    placeholder="you@example.com"
             >
             <div class="invalid-feedback">
-                Укажите корректный логин.
+                Укажите корректный email.
             </div>
         </div>
         <div class="mb-3">
@@ -73,6 +73,9 @@
         </div>
         <button type="submit" class="btn btn-primary w-100">Войти</button>
     </form>
+    <div class="text-center mt-3">
+        <a href="/register">Регистрация</a>
+    </div>
 </div>
 
 <!-- Bootstrap JS + валидация -->

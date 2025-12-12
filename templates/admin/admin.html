@@ -19,37 +19,48 @@
 
 <div class="container py-4 flex-fill">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="m-0">Админ-панель</h1>
-    <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" id="themeSwitch"/>
-      <label class="form-check-label" for="themeSwitch">Тёмная тема</label>
+    <h1 class="m-0">Админ-панель
+      {{ if .CurrentLogin }}
+        <small class="text-muted" style="font-size:.5em; font-weight:400;">— {{ .CurrentLogin }}</small>
+      {{ end }}
+    </h1>
+    <div class="d-flex align-items-center gap-3">
+      <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" id="themeSwitch"/>
+        <label class="form-check-label" for="themeSwitch">Тёмная тема</label>
+      </div>
+      <form action="/logout" method="post" class="m-0">
+        <button type="submit" class="btn btn-outline-danger btn-sm">Выйти</button>
+      </form>
     </div>
   </div>
 
   <!-- Вкладки -->
   <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+    {{ if .IsAdmin }}
     <li class="nav-item">
-      <a class="nav-link {{ if eq .ActiveTab "posts" }}active{{ end }}"
-      data-bs-toggle="tab"
-      href="#posts">Посты</a>
+      <a class='nav-link {{ if eq .ActiveTab "posts" }}active{{ end }}'
+         data-bs-toggle="tab"
+         href="#posts">Посты</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {{ if eq .ActiveTab "projects" }}active{{ end }}"
-      data-bs-toggle="tab"
-      href="#projects">Проекты</a>
+      <a class='nav-link {{ if eq .ActiveTab "projects" }}active{{ end }}'
+         data-bs-toggle="tab"
+         href="#projects">Проекты</a>
     </li>
-      <li class="nav-item">
-          <a class="nav-link {{ if eq .ActiveTab "setting" }}active{{ end }}"
-          data-bs-toggle="tab"
-          href="#setting">Настройки</a>
-      </li>
+    {{ end }}
+    <li class="nav-item">
+      <a class='nav-link {{ if eq .ActiveTab "setting" }}active{{ end }}'
+         data-bs-toggle="tab"
+         href="#setting">Настройки</a>
+    </li>
   </ul>
 
   <!-- Контент -->
   <div class="tab-content mt-3">
+    {{ if .IsAdmin }}
     <!-- Таб: Посты -->
-    <div class="tab-pane fade {{ if eq .ActiveTab "posts" }}show active{{ end }}"
-    id="posts">
+    <div class='tab-pane fade {{ if eq .ActiveTab "posts" }}show active{{ end }}' id="posts">
     <h2>Управление постами</h2>
 
     <form method="POST"
@@ -123,8 +134,8 @@
     </table>
   </div>
 
-  <!-- Таб: Проекты -->
-    <div class="tab-pane fade {{ if eq .ActiveTab "projects" }}show active{{ end }}" id="projects">
+    <!-- Таб: Проекты -->
+    <div class='tab-pane fade {{ if eq .ActiveTab "projects" }}show active{{ end }}' id="projects">
     <h2>Управление проектами</h2>
 
     <div id="loadingSpinner" class="text-center my-3" style="display:none;">
@@ -196,13 +207,48 @@
             {{ end }}
         </table>
     </form>
-</div>
+    </div>
+    {{ end }}
 
     <!-- Настройки -->
-    <div class="tab-pane fade {{ if eq .ActiveTab "setting" }}show active{{ end }}"
-    id="setting">
-    <h2>Настройки</h2>
-    </div>
+    <div class='tab-pane fade {{ if eq .ActiveTab "setting" }}show active{{ end }}' id="setting">
+      <h2>Личный кабинет — настройки</h2>
+      {{ if .Error }}
+      <div class="alert alert-danger">{{ .Error }}</div>
+      {{ end }}
+      <form method="post" action="/cabinet/save" class="card p-3 shadow-sm">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Фон главной страницы (URL изображения)</label>
+            <input class="form-control" name="home_bg_url" value="{{ if .Settings }}{{ .Settings.HomeBgURL }}{{ end }}" placeholder="https://...">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Ваш адрес страницы (slug)</label>
+            <input class="form-control" name="slug" value="{{ if .Settings }}{{ .Settings.Slug }}{{ end }}" placeholder="например: alex">
+            <div class="form-text">Разрешены: латиница, цифры, дефис. 3–32 символа. Ваша страница будет доступна по адресу: <code>/{{ if and .Settings .Settings.Slug }}{{ .Settings.Slug }}{{ else }}&lt;slug&gt;{{ end }}</code></div>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">GitHub</label>
+            <input class="form-control" name="link_github" value="{{ if .Settings }}{{ .Settings.LinkGitHub }}{{ end }}" placeholder="https://github.com/username">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">Telegram</label>
+            <input class="form-control" name="link_tg" value="{{ if .Settings }}{{ .Settings.LinkTG }}{{ end }}" placeholder="https://t.me/username">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Кастомная ссылка</label>
+            <input class="form-control" name="link_custom" value="{{ if .Settings }}{{ .Settings.LinkCustom }}{{ end }}" placeholder="https://...">
+          </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button class="btn btn-primary" type="submit">Сохранить</button>
+          <a href="/" class="btn btn-outline-secondary">На главную</a>
+          {{ if and .Settings .Settings.Slug }}
+          <a class="btn btn-outline-success" href="/{{ .Settings.Slug }}" target="_blank">Открыть мою страницу</a>
+          {{ end }}
+        </div>
+      </form>
+      </div>
 </div>
 </div>
 
